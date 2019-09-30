@@ -1,0 +1,40 @@
+From a07c124b4a249a7c98864f8236a569345dc4febe Mon Sep 17 00:00:00 2001
+From: Jaroslav Mracek <jmracek@redhat.com>
+Date: Mon, 4 Feb 2019 09:14:17 +0100
+Subject: [PATCH 082/175] Add best as default behavior (RhBug:1670776,1671683)
+
+The new default behavior should provide a better security.
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1670776
+https://bugzilla.redhat.com/show_bug.cgi?id=1671683
+Signed-off-by: root <root@localhost.localdomain>
+---
+ doc/api_conf.rst | 2 +-
+ etc/dnf/dnf.conf | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/doc/api_conf.rst b/doc/api_conf.rst
+index f86e4432..9dd6a6ab 100644
+--- a/doc/api_conf.rst
++++ b/doc/api_conf.rst
+@@ -30,7 +30,7 @@ Configurable settings of the :class:`dnf.Base` object are stored into a :class:`
+   
+   .. attribute:: best
+ 
+-    Boolean option, ``True`` instructs the solver to either use a package with the highest available version or fail. On ``False``, do not fail if the latest version can not be installed. Default is ``False``.
++    Boolean option, ``True`` instructs the solver to either use a package with the highest available version or fail. On ``False``, do not fail if the latest version can not be installed. Default is ``True``.
+ 
+   .. attribute:: cachedir
+ 
+diff --git a/etc/dnf/dnf.conf b/etc/dnf/dnf.conf
+index 81b3e44d..812c189f 100644
+--- a/etc/dnf/dnf.conf
++++ b/etc/dnf/dnf.conf
+@@ -2,3 +2,4 @@
+ gpgcheck=1
+ installonly_limit=3
+ clean_requirements_on_remove=True
++best=True
+-- 
+2.19.1
+

@@ -1,0 +1,35 @@
+From c77f82e024226264ec04db8b6e1121f0d81d3c2a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Robert-Andr=C3=A9=20Mauchin?= <zebob.m@gmail.com>
+Date: Thu, 4 Apr 2019 15:08:59 +0200
+Subject: [PATCH 173/175] Fix the installation of completion_helper.py
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Change introduced in df19a47d672b09683cc03620a41114cd4239e prevents the
+installation of completion_helper.py on Fedora 30.
+
+Bug report: https://bugzilla.redhat.com/show_bug.cgi?id=1695853
+
+Signed-off-by: Robert-André Mauchin <zebob.m@gmail.com>
+Signed-off-by: root <root@localhost.localdomain>
+---
+ dnf/cli/CMakeLists.txt | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/dnf/cli/CMakeLists.txt b/dnf/cli/CMakeLists.txt
+index 5e335d0c..a32305bc 100644
+--- a/dnf/cli/CMakeLists.txt
++++ b/dnf/cli/CMakeLists.txt
+@@ -1,4 +1,6 @@
+ FILE(GLOB cli_SRCS *.py)
+ INSTALL (FILES ${cli_SRCS} DESTINATION ${PYTHON_INSTALL_DIR}/dnf/cli)
++# completion_helper.py is generated so the glob alone won't see it:
++INSTALL (FILES completion_helper.py DESTINATION ${PYTHON_INSTALL_DIR}/dnf/cli)
+ 
+-ADD_SUBDIRECTORY (commands)
+\ No newline at end of file
++ADD_SUBDIRECTORY (commands)
+-- 
+2.19.1
+

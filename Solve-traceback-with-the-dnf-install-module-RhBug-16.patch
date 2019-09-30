@@ -1,0 +1,31 @@
+From 3c88bc6d39a965d93452188de88e63cea7225d11 Mon Sep 17 00:00:00 2001
+From: Jaroslav Mracek <jmracek@redhat.com>
+Date: Thu, 14 Mar 2019 16:24:57 +0100
+Subject: [PATCH 152/175] Solve traceback with the "dnf install @module"
+ (RhBug:1688823)
+
+Fix modular solver error formatting. The problem was only triggered in
+presence of modular errors.
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1688823
+Signed-off-by: root <root@localhost.localdomain>
+---
+ dnf/cli/commands/install.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/dnf/cli/commands/install.py b/dnf/cli/commands/install.py
+index 5e281089..e2f97ba6 100644
+--- a/dnf/cli/commands/install.py
++++ b/dnf/cli/commands/install.py
+@@ -94,7 +94,7 @@ class InstallCommand(commands.Command):
+                     module_debsolv_errors = e.module_debsolv_errors
+                     if module_debsolv_errors:
+                         logger.error(dnf.module.module_base.format_modular_solver_errors(
+-                            module_debsolv_errors))
++                            module_debsolv_errors[0]))
+             else:
+                 skipped_grp_specs = self.opts.grp_specs
+         if self.opts.filenames and nevra_forms:
+-- 
+2.19.1
+

@@ -1,0 +1,82 @@
+From f4161c41040710ef2de1fb8851b1cb4c5077505a Mon Sep 17 00:00:00 2001
+From: Jaroslav Mracek <jmracek@redhat.com>
+Date: Thu, 29 Nov 2018 16:39:04 +0100
+Subject: [PATCH 054/175] Run plugins hook safely (RhBug:1495482)
+
+It should prevent from critical problems caused by plugins.
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1495482
+Signed-off-by: root <root@localhost.localdomain>
+---
+ dnf/plugin.py | 34 ++++++++++++++++++++++++----------
+ 1 file changed, 24 insertions(+), 10 deletions(-)
+
+diff --git a/dnf/plugin.py b/dnf/plugin.py
+index f7aa0b21..91039cdc 100644
+--- a/dnf/plugin.py
++++ b/dnf/plugin.py
+@@ -31,6 +31,7 @@ import logging
+ import operator
+ import os
+ import sys
++import traceback
+ 
+ import dnf.logging
+ import dnf.pycomp
+@@ -95,10 +96,14 @@ class Plugins(object):
+         self.plugin_cls = []
+         self.plugins = []
+ 
+-    def _caller(method):
+-        def fn(self):
+-            dnf.util.mapall(operator.methodcaller(method), self.plugins)
+-        return fn
++    def _caller(self, method):
++        for plugin in self.plugins:
++            try:
++                getattr(plugin, method)()
++            except Exception:
++                exc_type, exc_value, exc_traceback = sys.exc_info()
++                except_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
++                logger.critical(''.join(except_list))
+ 
+     def _check_enabled(self, conf, enable_plugins):
+         """Checks whether plugins are enabled or disabled in configuration files
+@@ -131,19 +136,28 @@ class Plugins(object):
+             names = sorted(plugin.name for plugin in self.plugin_cls)
+             logger.debug(_('Loaded plugins: %s'), ', '.join(names))
+ 
+-    _run_pre_config = _caller('pre_config')
++    def _run_pre_config(self):
++        self._caller('pre_config')
+ 
+-    _run_config = _caller('config')
++    def _run_config(self):
++        self._caller('config')
+ 
+     def _run_init(self, base, cli=None):
+         for p_cls in self.plugin_cls:
+             plugin = p_cls(base, cli)
+             self.plugins.append(plugin)
+ 
+-    run_sack = _caller('sack')
+-    run_resolved = _caller('resolved')
+-    run_pre_transaction = _caller('pre_transaction')
+-    run_transaction = _caller('transaction')
++    def run_sack(self):
++        self._caller('sack')
++
++    def run_resolved(self):
++        self._caller('resolved')
++
++    def run_pre_transaction(self):
++        self._caller('pre_transaction')
++
++    def run_transaction(self):
++        self._caller('transaction')
+ 
+     def _unload(self):
+         del sys.modules[DYNAMIC_PACKAGE]
+-- 
+2.19.1
+

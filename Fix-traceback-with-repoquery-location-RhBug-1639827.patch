@@ -1,0 +1,35 @@
+From 3d40275c0fd1a9781dafaefc9580ebf364ee9a6a Mon Sep 17 00:00:00 2001
+From: Jaroslav Mracek <jmracek@redhat.com>
+Date: Tue, 23 Oct 2018 13:11:31 +0200
+Subject: [PATCH 022/175] Fix traceback with repoquery --location
+ (RhBug:1639827)
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1639827
+
+Closes: #1249
+Approved by: m-blaha
+
+Signed-off-by: root <root@localhost.localdomain>
+---
+ dnf/package.py | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/dnf/package.py b/dnf/package.py
+index c2b556a6..478cd07e 100644
+--- a/dnf/package.py
++++ b/dnf/package.py
+@@ -242,10 +242,7 @@ class Package(hawkey.Package):
+         if mirrors:
+             return schemes_filter(mirrors)
+         elif self.repo.baseurl:
+-            if isinstance(self.repo.baseurl, list):
+-                return schemes_filter(self.repo.baseurl)
+-            else:
+-                return schemes_filter([self.repo.baseurl])
++            return schemes_filter(self.repo.baseurl)
+ 
+     def _is_local_pkg(self):
+         if self.repoid == "@System":
+-- 
+2.19.1
+

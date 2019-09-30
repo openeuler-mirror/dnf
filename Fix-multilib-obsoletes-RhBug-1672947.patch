@@ -1,0 +1,46 @@
+From 281c07db9664100b23150b89afa786fa56189aa9 Mon Sep 17 00:00:00 2001
+From: root <root@localhost.localdomain>
+Date: Sat, 21 Dec 2019 22:00:50 +0800
+Subject: [PATCH] backport-Fix-multilib-obsoletes-RhBug-1672947
+
+Signed-off-by: root <root@localhost.localdomain>
+---
+ dnf/base.py | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/dnf/base.py b/dnf/base.py
+index bc05667..b5e2b42 100644
+--- a/dnf/base.py
++++ b/dnf/base.py
+@@ -635,9 +635,10 @@ class Base(object):
+         for pkg in goal.list_installs():
+             self._ds_callback.pkg_added(pkg, 'i')
+             obs = goal.obsoleted_by_package(pkg)
+-            # skip obsoleted packages that are not part of all_obsoleted
+-            # they are handled as upgrades/downgrades
+-            obs = [i for i in obs if i in all_obsoleted]
++            # Skip obsoleted packages that are not part of all_obsoleted,
++            # they are handled as upgrades/downgrades.
++            # Also keep RPMs with the same name - they're not always in all_obsoleted.
++            obs = [i for i in obs if i in all_obsoleted or i.name == pkg.name]
+ 
+             # TODO: move to libdnf: getBestReason
+             reason = goal.get_reason(pkg)
+@@ -669,9 +670,11 @@ class Base(object):
+                 upgraded = obs.pop(0)
+             else:
+                 obs.remove(upgraded)
+-            # skip obsoleted packages that are not part of all_obsoleted
+-            # they are handled as upgrades/downgrades
+-            obs = [i for i in obs if i in all_obsoleted]
++            # Skip obsoleted packages that are not part of all_obsoleted,
++            # they are handled as upgrades/downgrades.
++            # Also keep RPMs with the same name - they're not always in all_obsoleted.
++            obs = [i for i in obs if i in all_obsoleted or i.name == pkg.name]
++
+             cb = lambda pkg: self._ds_callback.pkg_added(pkg, 'od')
+             dnf.util.mapall(cb, obs)
+             if pkg in self._get_installonly_query():
+-- 
+2.19.1
+

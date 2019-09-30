@@ -1,0 +1,56 @@
+From 2a05b85423fb343cf7fdd2ebdc437052345bf9e5 Mon Sep 17 00:00:00 2001
+From: Jaroslav Rohel <jrohel@redhat.com>
+Date: Wed, 24 Oct 2018 06:21:41 +0200
+Subject: [PATCH 008/175] [conf] "setopt" not create/rewrite other
+ option_parser options
+
+Rewriting of option can damage it.
+Example of crash (setopt will damages the excludepkgs option):
+dnf --setopt=excludepkgs=a --excludepkgs=b
+Traceback (most recent call last):
+  File "bin/dnf-2", line 58, in <module>
+    main.user_main(sys.argv[1:], exit_code=True)
+  File "/home/jrohel/projects/rpm-software-management/dnf/dnf/cli/main.py", line 179, in user_main
+    errcode = main(args)
+  File "/home/jrohel/projects/rpm-software-management/dnf/dnf/cli/main.py", line 64, in main
+    return _main(base, args, cli_class, option_parser_class)
+  File "/home/jrohel/projects/rpm-software-management/dnf/dnf/cli/main.py", line 95, in _main
+    cli.configure(list(map(ucd, args)), option_parser())
+  File "/home/jrohel/projects/rpm-software-management/dnf/dnf/cli/cli.py", line 816, in configure
+    opts = self.optparser.parse_main_args(args)
+  File "/home/jrohel/projects/rpm-software-management/dnf/dnf/cli/option_parser.py", line 380, in parse_main_args
+    namespace, _unused_args = parser.parse_known_args(args)
+  File "/usr/lib64/python3.6/argparse.py", line 1766, in parse_known_args
+    namespace, args = self._parse_known_args(args, namespace)
+  File "/usr/lib64/python3.6/argparse.py", line 1972, in _parse_known_args
+    start_index = consume_optional(start_index)
+  File "/usr/lib64/python3.6/argparse.py", line 1912, in consume_optional
+    take_action(action, args, option_string)
+  File "/usr/lib64/python3.6/argparse.py", line 1840, in take_action
+    action(self, namespace, argument_values, option_string)
+  File "/home/jrohel/projects/rpm-software-management/dnf/dnf/cli/option_parser.py", line 74, in __call__
+    self).__call__(parser, namespace, val, opt_str)
+  File "/usr/lib64/python3.6/argparse.py", line 958, in __call__
+    items.append(values)
+AttributeError: 'str' object has no attribute 'append'
+
+Signed-off-by: root <root@localhost.localdomain>
+---
+ dnf/cli/option_parser.py | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/dnf/cli/option_parser.py b/dnf/cli/option_parser.py
+index 531ea438..e9040165 100644
+--- a/dnf/cli/option_parser.py
++++ b/dnf/cli/option_parser.py
+@@ -114,7 +114,6 @@ class OptionParser(argparse.ArgumentParser):
+                 setattr(namespace, 'repo_' + self.dest, self.repoopts)
+             else:
+                 setattr(self.mainopts, k, v)
+-                setattr(namespace, k, v)
+                 setattr(namespace, 'main_' + self.dest, self.mainopts)
+ 
+     class ParseSpecGroupFileCallback(argparse.Action):
+-- 
+2.19.1
+
