@@ -11,7 +11,7 @@
 
 Name:           dnf
 Version:        4.0.4
-Release:        2
+Release:        3
 Summary:        A software package manager that manages packages on Linux distributions.
 License:        GPLv2+ and GPLv2 and GPL
 URL:            https://github.com/rpm-software-management/dnf
@@ -48,7 +48,11 @@ Provides:       dnf-command(provides) dnf-command(reinstall) dnf-command(remove)
 Provides:       dnf-command(repoquery) dnf-command(repository-packages) dnf-command(updateinfo)
 Provides:       dnf-command(search) dnf-command(upgrade) dnf-command(upgrade-to)
 Provides:       %{name}-conf = %{version}-%{release} dnf-data
-Obsoletes:      %{name}-conf <= %{version}-%{release} dnf-data
+Provides:       %{name}-automatic = %{version}-%{release}
+Provides:       %{name}-data = %{version}-%{release}
+Obsoletes:      %{name}-conf < %{version}-%{release} dnf-data
+Obsoletes:      %{name}-automatic < %{version}-%{release}
+Obsoletes:      %{name}-data < %{version}-%{release}
 Conflicts:      python2-dnf-plugins-core < 3.1 python3-dnf-plugins-core < 3.1
 Conflicts:      python2-dnf-plugins-extras < 3.0.2 python3-dnf-plugins-extras < 3.0.2
 
@@ -272,6 +276,12 @@ ln -sr  %{buildroot}/etc/dnf/protected.d %{buildroot}%{_sysconfdir}/yum/protecte
 %{_mandir}/man8/dnf*
 
 %changelog
+* Fri Dec 27 2019 openEuler Buildteam <buildteam@openeuler.org> - 4.0.4-3
+- Type:bugfix
+- Id:NA
+- SUG:NA
+- DESC:fix update problem
+
 * Fri Sep 20 2019 yanzhihua<yanzhihua4@huawei.com> - 4.0.4-2
 - Package init.
 
