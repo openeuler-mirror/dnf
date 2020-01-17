@@ -11,11 +11,14 @@
 
 Name:                 dnf
 Version:              4.2.15
-Release:              2
+Release:              3
 Summary:              A software package manager that manages packages on Linux distributions.
 License:              GPLv2+ and GPLv2 and GPL
 URL:                  https://github.com/rpm-software-management/dnf
 Source0:              https://github.com/rpm-software-management/dnf/archive/%{version}/%{name}-%{version}.tar.gz
+
+Patch9000:            Bugfix-format-problem.patch
+
 BuildArch:            noarch
 BuildRequires:        cmake gettext systemd bash-completion %{_bindir}/sphinx-build-3 %{_bindir}/sphinx-build
 Requires:             python3-%{name} = %{version}-%{release} libreport-filesystem python2-%{name} = %{version}-%{release} 
@@ -246,5 +249,8 @@ ln -sr  %{buildroot}%{_sysconfdir}/%{name}/vars %{buildroot}%{_sysconfdir}/yum/v
 %{_mandir}/man8/%{name}-automatic.8*
 
 %changelog
+* Fri Jan 17 2020 openEuler Buildteam <buildteam@openeuler.org> - 4.2.15-3
+- bug fix format problem
+
 * Mon Jan 6 2020 openEuler Buildteam <buildteam@openeuler.org> - 4.2.15-2
 - Package Init
