@@ -1,9 +1,4 @@
-%bcond_with python2
 %bcond_without python3
-
-%if %{with python2}
-    %global py2pluginpath %{python2_sitelib}/%{name}-plugins
-%endif
 
 %if %{with python3}
     %global py3pluginpath %{python3_sitelib}/%{name}-plugins
@@ -11,7 +6,7 @@
 
 Name:                 dnf
 Version:              4.2.15
-Release:              3
+Release:              4
 Summary:              A software package manager that manages packages on Linux distributions.
 License:              GPLv2+ and GPLv2 and GPL
 URL:                  https://github.com/rpm-software-management/dnf
@@ -20,8 +15,8 @@ Source0:              https://github.com/rpm-software-management/dnf/archive/%{v
 Patch9000:            Bugfix-format-problem.patch
 
 BuildArch:            noarch
-BuildRequires:        cmake gettext systemd bash-completion %{_bindir}/sphinx-build-3 %{_bindir}/sphinx-build
-Requires:             python3-%{name} = %{version}-%{release} libreport-filesystem python2-%{name} = %{version}-%{release} 
+BuildRequires:        cmake gettext systemd bash-completion %{_bindir}/sphinx-build-3
+Requires:             python3-%{name} = %{version}-%{release} libreport-filesystem 
 Recommends:           (%{_bindir}/sqlite3 if bash-completion) (python3-dbus if NetworkManager)
 Provides:             dnf-command(alias) dnf-command(autoremove) dnf-command(check-update) dnf-command(clean)
 Provides:             dnf-command(distro-sync) dnf-command(downgrade) dnf-command(group)  dnf-command(history)
@@ -48,21 +43,6 @@ Summary:              Package manager
 Utility that allows users to manage packages on their systems.\
 It supports RPMs, modules and comps groups & environments.
 
-%package -n           python2-%{name}
-Summary:              Python 2 interface to DNF
-%{?python_provide:%python_provide python2-%{name}}
-BuildRequires:        python2-devel python2-hawkey >= 0.37.0 python2-libdnf >= 0.37.0
-BuildRequires:        python2-libcomps >= 0.1.8 python2-libdnf libmodulemd >= 1.4.0
-BuildRequires:        python2-gpg python2-enum34 python2-rpm >= 4.14.0 python2-nose
-Requires:             python2-gpg libmodulemd >= 1.4.0 python2-enum34 python2-enum34 python2-libdnf
-Requires:             %{name}-data = %{version}-%{release} deltarpm python2-hawkey >= 0.37.0
-Requires:             python2-libdnf >= 0.37.0 python2-libcomps >= 0.1.8 python2-rpm >= 4.14.0
-Recommends:           rpm-plugin-systemd-inhibit
-Conflicts:            dnfdaemon < 0.3.19
-
-%description -n python2-%{name}
-Python 2 interface to DNF.
-
 %package -n           python3-%{name}
 Summary:              Python 3 interface to DNF
 %{?python_provide:%python_provide python3-%{name}}
@@ -85,13 +65,6 @@ mkdir build-py2
 mkdir build-py3
 
 %build
-%if %{with python2}
-    pushd build-py2
-    %cmake .. -DPYTHON_DESIRED:FILEPATH=%{__python2}
-    %make_build all doc-man
-    popd
-%endif
-
 %if %{with python3}
     pushd build-py3
     %cmake .. -DPYTHON_DESIRED:FILEPATH=%{__python3}
@@ -100,12 +73,6 @@ mkdir build-py3
 %endif
 
 %install
-%if %{with python2}
-    pushd build-py2
-    %make_install
-    popd
-%endif
-
 %if %{with python3}
     pushd build-py3
     %make_install
@@ -119,7 +86,6 @@ mkdir -p %{buildroot}%{_sysconfdir}/%{name}/plugins/
 mkdir -p %{buildroot}%{_sysconfdir}/%{name}/modules.d
 mkdir -p %{buildroot}%{_sysconfdir}/bash_completion.d/dnf
 mkdir -p %{buildroot}%{_sysconfdir}/%{name}/modules.defaults.d
-mkdir -p %{buildroot}%{py2pluginpath}/
 mkdir -p %{buildroot}%{py3pluginpath}/__pycache__/
 mkdir -p %{buildroot}%{_localstatedir}/log/
 mkdir -p %{buildroot}%{_var}/cache/dnf/
@@ -136,12 +102,6 @@ ln -sr  %{buildroot}%{_sysconfdir}/%{name}/protected.d %{buildroot}%{_sysconfdir
 ln -sr  %{buildroot}%{_sysconfdir}/%{name}/vars %{buildroot}%{_sysconfdir}/yum/vars
 
 %check
-%if %{with python2}
-    pushd build-py2
-    ctest -VV
-    popd
-%endif
-
 %if %{with python3}
     pushd build-py3
     ctest -VV
@@ -218,14 +178,6 @@ ln -sr  %{buildroot}%{_sysconfdir}/%{name}/vars %{buildroot}%{_sysconfdir}/yum/v
 %{_sysconfdir}/yum/protected.d
 %config(noreplace) %{_sysconfdir}/%{name}/protected.d/yum.conf
 
-%if %{with python2}
-%files -n python2-%{name}
-%{_bindir}/%{name}-2
-%exclude %{python2_sitelib}/%{name}/automatic
-%{python2_sitelib}/%{name}/
-%dir %{py2pluginpath}
-%endif
-
 %if %{with python3}
 %files -n python3-%{name}
 %{_bindir}/%{name}-3
@@ -249,6 +201,9 @@ ln -sr  %{buildroot}%{_sysconfdir}/%{name}/vars %{buildroot}%{_sysconfdir}/yum/v
 %{_mandir}/man8/%{name}-automatic.8*
 
 %changelog
+* Fri Feb 14 2020 openEuler Buildteam <buildteam@openeuler.org> - 4.2.15-4
+- remove python2
+
 * Fri Jan 17 2020 openEuler Buildteam <buildteam@openeuler.org> - 4.2.15-3
 - bug fix format problem
 
