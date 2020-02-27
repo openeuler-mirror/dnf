@@ -1,0 +1,23 @@
+From 6803740429c072617ad8f4e82f4d84f1662624bd Mon Sep 17 00:00:00 2001
+From: Yuri Chornoivan <yurchor@ukr.net>
+Date: Tue, 5 Nov 2019 13:21:42 +0200
+Subject: [PATCH] Remove extra brace
+
+Thanks in advance for fixing this issue
+---
+ dnf/cli/commands/__init__.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/dnf/cli/commands/__init__.py b/dnf/cli/commands/__init__.py
+index 83ba24ea98..ad53481dcb 100644
+--- a/dnf/cli/commands/__init__.py
++++ b/dnf/cli/commands/__init__.py
+@@ -58,7 +58,7 @@
+ 
+ 
+ Alternatively you can specify the url to the key you would like to use
+-for a repository in the 'gpgkey' option in a repository section and {prog}}
++for a repository in the 'gpgkey' option in a repository section and {prog}
+ will install it for you.
+ 
+ For more information contact your distribution or package provider.""")
