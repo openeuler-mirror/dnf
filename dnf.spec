@@ -6,15 +6,15 @@
 
 Name:                 dnf
 Version:              4.2.15
-Release:              5
+Release:              6
 Summary:              A software package manager that manages packages on Linux distributions.
 License:              GPLv2+ and GPLv2 and GPL
 URL:                  https://github.com/rpm-software-management/dnf
 Source0:              https://github.com/rpm-software-management/dnf/archive/%{version}/%{name}-%{version}.tar.gz
 
-Patch9000:            Bugfix-format-problem.patch
-
-Patch6000:            backport-Revert-Fix-messages-for-starting-and-failing-scriptlets.patch
+Patch6000:            Bugfix-format-problem.patch
+Patch6001:            backport-Revert-Fix-messages-for-starting-and-failing-scriptlets.patch
+Patch6002:            backport-remove-extra-brace.patch
 
 BuildArch:            noarch
 BuildRequires:        cmake gettext systemd bash-completion %{_bindir}/sphinx-build-3
@@ -203,6 +203,9 @@ ln -sr  %{buildroot}%{_sysconfdir}/%{name}/vars %{buildroot}%{_sysconfdir}/yum/v
 %{_mandir}/man8/%{name}-automatic.8*
 
 %changelog
+* Thu Feb 27 2020 openEuler Buildteam <buildteam@openeuler.org> - 4.2.15-6
+- remove extra brace
+
 * Mon Feb 24 2020 openEuler Buildteam <buildteam@openeuler.org> - 4.2.15-5
 - Revert Fix messages for starting and failing scriptlets
 
