@@ -6,7 +6,7 @@
 
 Name:                 dnf
 Version:              4.2.15
-Release:              7
+Release:              8
 Summary:              A software package manager that manages packages on Linux distributions.
 License:              GPLv2+ and GPLv2 and GPL
 URL:                  https://github.com/rpm-software-management/dnf
@@ -55,6 +55,7 @@ Requires:             python3-gpg %{name}-data = %{version}-%{release} libmodule
 Requires:             deltarpm python3-hawkey >= 0.37.0 python3-libdnf >= 0.37.0
 Requires:             python3-libcomps >= 0.1.8 python3-libdnf  python3-rpm >= 4.14.0
 Recommends:           python3-unbound rpm-plugin-systemd-inhibit
+Obsoletes:	      python2-%{name}
 
 %description -n python3-%{name}
 Python 3 interface to DNF.
@@ -203,6 +204,9 @@ ln -sr  %{buildroot}%{_sysconfdir}/%{name}/vars %{buildroot}%{_sysconfdir}/yum/v
 %{_mandir}/man8/%{name}-automatic.8*
 
 %changelog
+* Wed Mar 18 2020 songnannan <songnannan2@huawei.com> - 4.2.15-8
+- add obsoletes the python2-dnf
+
 * Tue Mar 3 2020 openEuler Buildteam <buildteam@openeuler.org> - 4.2.15-7
 - modify the patch name
 
