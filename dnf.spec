@@ -1,23 +1,15 @@
-%bcond_without python3
-
-%if %{with python3}
-    %global py3pluginpath %{python3_sitelib}/%{name}-plugins
-%endif
+%global py3pluginpath %{python3_sitelib}/%{name}-plugins
 
 Name:                 dnf
-Version:              4.2.15
-Release:              8
+Version:              4.2.23
+Release:              1
 Summary:              A software package manager that manages packages on Linux distributions.
 License:              GPLv2+ and GPLv2 and GPL
 URL:                  https://github.com/rpm-software-management/dnf
 Source0:              https://github.com/rpm-software-management/dnf/archive/%{version}/%{name}-%{version}.tar.gz
 
-Patch6000:            Bugfix-format-problem.patch
-Patch6001:            Revert-Fix-messages-for-starting-and-failing-scriptlets.patch
-Patch6002:            Remove-extra-brace.patch
-
 BuildArch:            noarch
-BuildRequires:        cmake gettext systemd bash-completion %{_bindir}/sphinx-build-3
+BuildRequires:        cmake gettext systemd bash-completion python3-sphinx
 Requires:             python3-%{name} = %{version}-%{release} libreport-filesystem 
 Recommends:           (%{_bindir}/sqlite3 if bash-completion) (python3-dbus if NetworkManager)
 Provides:             dnf-command(alias) dnf-command(autoremove) dnf-command(check-update) dnf-command(clean)
@@ -26,7 +18,7 @@ Provides:             dnf-command(info) dnf-command(install) dnf-command(list) d
 Provides:             dnf-command(mark) dnf-command(provides) dnf-command(reinstall) dnf-command(remove)
 Provides:             dnf-command(repolist) dnf-command(repoquery) dnf-command(repository-packages)
 Provides:             dnf-command(search) dnf-command(updateinfo) dnf-command(upgrade) dnf-command(upgrade-to)
-Conflicts:            python2-dnf-plugins-core < 4.0.6 python3-dnf-plugins-core < 4.0.6
+Conflicts:            python2-dnf-plugins-core < 4.0.16 python3-dnf-plugins-core < 4.0.16
 Provides:             dnf-data %{name}-conf = %{version}-%{release} %{name}-automatic = %{version}-%{release}
 Obsoletes:            dnf-data %{name}-conf < %{version}-%{release} %{name}-automatic < %{version}-%{release}
 
@@ -39,7 +31,7 @@ one using rpm.
 
 %package -n           yum 
 Requires:             %{name} = %{version}-%{release}
-Summary:              Package manager 
+Summary:              Package manager
 
 %description -n       yum
 Utility that allows users to manage packages on their systems.\
@@ -48,11 +40,11 @@ It supports RPMs, modules and comps groups & environments.
 %package -n           python3-%{name}
 Summary:              Python 3 interface to DNF
 %{?python_provide:%python_provide python3-%{name}}
-BuildRequires:        python3-devel python3-hawkey >= 0.37.0 python3-libdnf >= 0.37.0
+BuildRequires:        python3-devel python3-hawkey >= 0.48.0 python3-libdnf >= 0.48.0
 BuildRequires:        python3-libcomps >= 0.1.8 python3-libdnf libmodulemd >= 1.4.0
 BuildRequires:        python3-nose python3-gpg python3-rpm >= 4.14.0
 Requires:             python3-gpg %{name}-data = %{version}-%{release} libmodulemd >= 1.4.0
-Requires:             deltarpm python3-hawkey >= 0.37.0 python3-libdnf >= 0.37.0
+Requires:             deltarpm python3-hawkey >= 0.48.0 python3-libdnf >= 0.48.0
 Requires:             python3-libcomps >= 0.1.8 python3-libdnf  python3-rpm >= 4.14.0
 Recommends:           python3-unbound rpm-plugin-systemd-inhibit
 Obsoletes:	      python2-%{name}
@@ -64,23 +56,18 @@ Python 3 interface to DNF.
 
 %prep
 %autosetup -p1
-mkdir build-py2
 mkdir build-py3
 
 %build
-%if %{with python3}
-    pushd build-py3
-    %cmake .. -DPYTHON_DESIRED:FILEPATH=%{__python3}
-    %make_build all doc-man
-    popd
-%endif
+pushd build-py3
+%cmake .. -DPYTHON_DESIRED:FILEPATH=%{__python3}
+%make_build all doc-man
+popd
 
 %install
-%if %{with python3}
-    pushd build-py3
-    %make_install
-    popd
-%endif
+pushd build-py3
+%make_install
+popd
 
 %find_lang %{name}
 mkdir -p %{buildroot}%{_sysconfdir}/%{name}/vars
@@ -105,11 +92,9 @@ ln -sr  %{buildroot}%{_sysconfdir}/%{name}/protected.d %{buildroot}%{_sysconfdir
 ln -sr  %{buildroot}%{_sysconfdir}/%{name}/vars %{buildroot}%{_sysconfdir}/yum/vars
 
 %check
-%if %{with python3}
-    pushd build-py3
-    ctest -VV
-    popd
-%endif
+pushd build-py3
+ctest -VV
+popd
 
 %post
 %systemd_post dnf-makecache.timer
@@ -181,14 +166,12 @@ ln -sr  %{buildroot}%{_sysconfdir}/%{name}/vars %{buildroot}%{_sysconfdir}/yum/v
 %{_sysconfdir}/yum/protected.d
 %config(noreplace) %{_sysconfdir}/%{name}/protected.d/yum.conf
 
-%if %{with python3}
 %files -n python3-%{name}
 %{_bindir}/%{name}-3
 %exclude %{python3_sitelib}/%{name}/automatic
 %{python3_sitelib}/%{name}/
 %dir %{py3pluginpath}
 %dir %{py3pluginpath}/__pycache__
-%endif
 
 %files help
 %{_datadir}/locale/*
@@ -204,6 +187,12 @@ ln -sr  %{buildroot}%{_sysconfdir}/%{name}/vars %{buildroot}%{_sysconfdir}/yum/v
 %{_mandir}/man8/%{name}-automatic.8*
 
 %changelog
+* Tue Apr 28 2020 zhouyihang <zhouyihang3@huawei.com> - 4.2.23-1
+- Type:requirement
+- ID:NA
+- SUG:NA
+- DESC:update dnf version to 4.2.23
+
 * Wed Mar 18 2020 songnannan <songnannan2@huawei.com> - 4.2.15-8
 - add obsoletes the python2-dnf
 
