@@ -2,7 +2,7 @@
 
 Name:                 dnf
 Version:              4.2.23
-Release:              1
+Release:              2
 Summary:              A software package manager that manages packages on Linux distributions.
 License:              GPLv2+ and GPLv2 and GPL
 URL:                  https://github.com/rpm-software-management/dnf
@@ -18,7 +18,7 @@ Provides:             dnf-command(info) dnf-command(install) dnf-command(list) d
 Provides:             dnf-command(mark) dnf-command(provides) dnf-command(reinstall) dnf-command(remove)
 Provides:             dnf-command(repolist) dnf-command(repoquery) dnf-command(repository-packages)
 Provides:             dnf-command(search) dnf-command(updateinfo) dnf-command(upgrade) dnf-command(upgrade-to)
-Conflicts:            python2-dnf-plugins-core < 4.0.16 python3-dnf-plugins-core < 4.0.16
+Conflicts:            python2-dnf-plugins-core < 4.0.6 python3-dnf-plugins-core < 4.0.6
 Provides:             dnf-data %{name}-conf = %{version}-%{release} %{name}-automatic = %{version}-%{release}
 Obsoletes:            dnf-data %{name}-conf < %{version}-%{release} %{name}-automatic < %{version}-%{release}
 
@@ -187,6 +187,12 @@ popd
 %{_mandir}/man8/%{name}-automatic.8*
 
 %changelog
+* Tue Aug 04 2020 yuboyun <yuboyun@huawei.com> - 4.2.23-2
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC:fix conflicts error for new version
+
 * Tue Apr 28 2020 zhouyihang <zhouyihang3@huawei.com> - 4.2.23-1
 - Type:requirement
 - ID:NA
