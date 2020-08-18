@@ -6,7 +6,7 @@
 
 Name:                 dnf
 Version:              4.2.15
-Release:              8
+Release:              9
 Summary:              A software package manager that manages packages on Linux distributions.
 License:              GPLv2+ and GPLv2 and GPL
 URL:                  https://github.com/rpm-software-management/dnf
@@ -204,6 +204,9 @@ ln -sr  %{buildroot}%{_sysconfdir}/%{name}/vars %{buildroot}%{_sysconfdir}/yum/v
 %{_mandir}/man8/%{name}-automatic.8*
 
 %changelog
+* Tue Aug 18 2020 chenyaqiang <chenyaqiang@huawei.com> - 2.2.53-8
+- rebuild for package build
+
 * Wed Mar 18 2020 songnannan <songnannan2@huawei.com> - 4.2.15-8
 - add obsoletes the python2-dnf
 
