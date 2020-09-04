@@ -2,7 +2,7 @@
 
 Name:                 dnf
 Version:              4.2.23
-Release:              2
+Release:              3
 Summary:              A software package manager that manages packages on Linux distributions.
 License:              GPLv2+ and GPLv2 and GPL
 URL:                  https://github.com/rpm-software-management/dnf
@@ -52,7 +52,15 @@ Obsoletes:	      python2-%{name}
 %description -n python3-%{name}
 Python 3 interface to DNF.
 
-%package_help
+%package              help
+Summary:              Documents for dnf and yum
+Buildarch:            noarch
+Requires:             man info
+Provides:             yum-help = %{version}-%{release}
+Obsoletes:            yum-help < %{version}-%{release}
+
+%description          help
+Man pages and other related documents for dnf and yum
 
 %prep
 %autosetup -p1
@@ -134,6 +142,7 @@ popd
 %{_unitdir}/%{name}-automatic-install.service
 %{_unitdir}/%{name}-automatic-install.timer
 %{_var}/cache/%{name}/
+%{python3_sitelib}/%{name}/automatic/
 %dir %{_sysconfdir}/%{name} 
 %dir %{_sysconfdir}/%{name}/modules.d
 %dir %{_sysconfdir}/%{name}/modules.defaults.d
@@ -187,6 +196,12 @@ popd
 %{_mandir}/man8/%{name}-automatic.8*
 
 %changelog
+* Tue Sep 01 2020 zhangrui <zhangrui182@huawei.com> - 4.2.23-3
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC:provide automatic files and provide yum help
+
 * Tue Aug 04 2020 yuboyun <yuboyun@huawei.com> - 4.2.23-2
 - Type:bugfix
 - ID:NA
