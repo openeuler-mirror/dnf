@@ -2,7 +2,7 @@
 
 Name:                 dnf
 Version:              4.2.23
-Release:              4
+Release:              3
 Summary:              A software package manager that manages packages on Linux distributions.
 License:              GPLv2+ and GPLv2 and GPL
 URL:                  https://github.com/rpm-software-management/dnf
@@ -44,7 +44,7 @@ BuildRequires:        python3-devel python3-hawkey >= 0.48.0 python3-libdnf >= 0
 BuildRequires:        python3-libcomps >= 0.1.8 python3-libdnf libmodulemd >= 1.4.0
 BuildRequires:        python3-nose python3-gpg python3-rpm >= 4.14.0
 Requires:             python3-gpg %{name}-data = %{version}-%{release} libmodulemd >= 1.4.0
-Requires:             python3-hawkey >= 0.48.0 python3-libdnf >= 0.48.0
+Requires:             deltarpm python3-hawkey >= 0.48.0 python3-libdnf >= 0.48.0
 Requires:             python3-libcomps >= 0.1.8 python3-libdnf  python3-rpm >= 4.14.0
 Recommends:           python3-unbound rpm-plugin-systemd-inhibit
 Obsoletes:	      python2-%{name}
@@ -196,12 +196,6 @@ popd
 %{_mandir}/man8/%{name}-automatic.8*
 
 %changelog
-* Fri Nov 20 2020 lunankun <lunankun@huawei.com> - 4.2.23-4
-- Type:requirement
-- ID:NA
-- SUG:NA
-- DESC:remove depend deltarpm
-
 * Tue Sep 01 2020 zhangrui <zhangrui182@huawei.com> - 4.2.23-3
 - Type:bugfix
 - ID:NA
