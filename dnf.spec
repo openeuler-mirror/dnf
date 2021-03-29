@@ -2,11 +2,13 @@
 
 Name:                 dnf
 Version:              4.2.23
-Release:              4
+Release:              5
 Summary:              A software package manager that manages packages on Linux distributions.
 License:              GPLv2+ and GPLv2 and GPL
 URL:                  https://github.com/rpm-software-management/dnf
 Source0:              https://github.com/rpm-software-management/dnf/archive/%{version}/%{name}-%{version}.tar.gz
+
+Patch0:               Fix-module-remove-all-when-no-match.patch
 
 BuildArch:            noarch
 BuildRequires:        cmake gettext systemd bash-completion python3-sphinx
@@ -100,6 +102,7 @@ ln -sr  %{buildroot}%{_sysconfdir}/%{name}/protected.d %{buildroot}%{_sysconfdir
 ln -sr  %{buildroot}%{_sysconfdir}/%{name}/vars %{buildroot}%{_sysconfdir}/yum/vars
 
 %check
+export TERM=linux
 pushd build-py3
 ctest -VV
 popd
@@ -196,6 +199,13 @@ popd
 %{_mandir}/man8/%{name}-automatic.8*
 
 %changelog
+* Tue Mar 30 2021 gaihuiying <gaihuiying1@huawei.com> - 4.2.23-5
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC:fix errors when use "yum module remove --all per:common" command
+       fix test test_mode_tty failed
+
 * Fri Nov 20 2020 lunankun <lunankun@huawei.com> - 4.2.23-4
 - Type:requirement
 - ID:NA
