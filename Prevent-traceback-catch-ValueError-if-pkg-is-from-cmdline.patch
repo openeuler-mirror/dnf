@@ -1,0 +1,25 @@
+From 643780709fbc62a58da3f71d32ee3e7399a8cdcc Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ale=C5=A1=20Mat=C4=9Bj?= <amatej@redhat.com>
+Date: Mon, 29 Mar 2021 09:26:16 +0200
+Subject: [PATCH] Prevent traceback (catch ValueError) if pkg is from cmdline
+
+---
+ dnf/cli/cli.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/dnf/cli/cli.py b/dnf/cli/cli.py
+index c2c04c9..6576997 100644
+--- a/dnf/cli/cli.py
++++ b/dnf/cli/cli.py
+@@ -292,7 +292,7 @@ class BaseCli(dnf.Base):
+                 fn = lambda x, y, z: self.output.userconfirm()
+                 try:
+                     self._get_key_for_package(po, fn)
+-                except dnf.exceptions.Error as e:
++                except (dnf.exceptions.Error, ValueError) as e:
+                     error_messages.append(str(e))
+ 
+             else:
+-- 
+1.8.3.1
+
