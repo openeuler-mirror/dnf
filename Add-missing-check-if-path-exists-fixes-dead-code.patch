@@ -1,0 +1,35 @@
+From e74a5fa5d23ab7903709faebf20449461d7c7575 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ale=C5=A1=20Mat=C4=9Bj?= <amatej@redhat.com>
+Date: Mon, 12 Apr 2021 09:02:42 +0200
+Subject: [PATCH] Add missing check if path exists, fixes dead code
+
+CVE-2021-3445
+RhBug:1915990
+
+Related: CVE-2021-3421, CVE-2021-20271
+---
+ dnf/rpm/miscutils.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/dnf/rpm/miscutils.py b/dnf/rpm/miscutils.py
+index 24456f3..235aaf2 100644
+--- a/dnf/rpm/miscutils.py
++++ b/dnf/rpm/miscutils.py
+@@ -30,12 +30,12 @@ logger = logging.getLogger('dnf')
+ 
+ def _verifyPkgUsingRpmkeys(package, installroot):
+     rpmkeys_binary = '/usr/bin/rpmkeys'
+-    if not rpmkeys_binary:
++    if not os.path.isfile(rpmkeys_binary):
+         rpmkeys_binary = which("rpmkeys")
+         logger.info(_('Using rpmkeys executable from {path} to verify signature for package: {package}.').format(
+             path=rpmkeys_binary, package=package))
+ 
+-    if not rpmkeys_binary:
++    if not os.path.isfile(rpmkeys_binary):
+         logger.critical(_('Cannot find rpmkeys executable to verify signatures.'))
+         return 0
+ 
+-- 
+1.8.3.1
+
