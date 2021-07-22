@@ -1,14 +1,23 @@
 %global py3pluginpath %{python3_sitelib}/%{name}-plugins
+%global relate_libdnf_version 0.48.0-3
 
 Name:                 dnf
 Version:              4.2.23
-Release:              4
+Release:              5
 Summary:              A software package manager that manages packages on Linux distributions.
 License:              GPLv2+ and GPLv2 and GPL
 URL:                  https://github.com/rpm-software-management/dnf
 Source0:              https://github.com/rpm-software-management/dnf/archive/%{version}/%{name}-%{version}.tar.gz
 
 Patch0:               Fix-module-remove-all-when-no-match.patch
+Patch1:               Prevent-traceback-catch-ValueError-if-pkg-is-from-cmdline.patch
+Patch2:               Check-for-specific-key-string-when-verifing-signatures.patch
+Patch3:               Use-rpmkeys-to-verify-package-signature-with-_pkgverify_level.patch
+Patch4:               Remove-key-regex-matching-rpm-sprintf-output-varies-too-much.patch
+Patch5:               Add-missing-check-if-path-exists-fixes-dead-code.patch
+Patch6:               dnf-rpm-miscutils.py-fix-usage-of-_.patch
+Patch7:               Pass-the-package-to-rpmkeys-stdin.patch
+Patch8:               Use-rpmkeys-alone-to-verify-signature.patch
 
 BuildArch:            noarch
 BuildRequires:        cmake gettext systemd bash-completion python3-sphinx
@@ -43,12 +52,12 @@ It supports RPMs, modules and comps groups & environments.
 Summary:              Python 3 interface to DNF
 %{?python_provide:%python_provide python3-%{name}}
 BuildRequires:        python3-devel python3-hawkey >= 0.48.0 python3-libdnf >= 0.48.0
-BuildRequires:        python3-libcomps >= 0.1.8 python3-libdnf libmodulemd >= 1.4.0
+BuildRequires:        python3-libcomps >= 0.1.8 libmodulemd >= 1.4.0
 BuildRequires:        python3-nose python3-gpg python3-rpm >= 4.14.0
 Requires:             python3-gpg %{name}-data = %{version}-%{release} libmodulemd >= 1.4.0
-Requires:             python3-hawkey >= 0.48.0 python3-libdnf >= 0.48.0
-Requires:             python3-libcomps >= 0.1.8 python3-libdnf  python3-rpm >= 4.14.0
-Recommends:           python3-unbound rpm-plugin-systemd-inhibit
+Requires:             python3-hawkey >= 0.48.0 python3-libdnf >= %{relate_libdnf_version}
+Requires:             python3-libcomps >= 0.1.8 python3-rpm >= 4.14.0
+Recommends:           python3-unbound
 Obsoletes:	      python2-%{name}
 
 %description -n python3-%{name}
@@ -199,6 +208,14 @@ popd
 %{_mandir}/man8/%{name}-automatic.8*
 
 %changelog
+* Thu Jul 15 2021 gaihuiying <gaihuiying1@huawei.com> - 4.2.23-5
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC:remove recommends rpm-plugins-systemd-inhibit
+       backport community patches and fix CVE-2021-3445
+       delete duplicate python3-libdnf dependency
+
 * Thu Apr 1 2021 gaihuiying <gaihuiying1@huawei.com> - 4.2.23-4
 - Type:bugfix
 - ID:NA
