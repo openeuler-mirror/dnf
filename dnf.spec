@@ -3,7 +3,7 @@
 
 Name:                 dnf
 Version:              4.2.23
-Release:              5
+Release:              6
 Summary:              A software package manager that manages packages on Linux distributions.
 License:              GPLv2+ and GPLv2 and GPL
 URL:                  https://github.com/rpm-software-management/dnf
@@ -21,7 +21,7 @@ Patch8:               Use-rpmkeys-alone-to-verify-signature.patch
 
 BuildArch:            noarch
 BuildRequires:        cmake gettext systemd bash-completion python3-sphinx
-Requires:             python3-%{name} = %{version}-%{release} libreport-filesystem %{name}-help
+Requires:             python3-%{name} = %{version}-%{release} libreport-filesystem
 Recommends:           (%{_bindir}/sqlite3 if bash-completion) (python3-dbus if NetworkManager)
 Provides:             dnf-command(alias) dnf-command(autoremove) dnf-command(check-update) dnf-command(clean)
 Provides:             dnf-command(distro-sync) dnf-command(downgrade) dnf-command(group)  dnf-command(history)
@@ -208,6 +208,12 @@ popd
 %{_mandir}/man8/%{name}-automatic.8*
 
 %changelog
+* Tue Aur 3 2021 Jianmin <jianmin@iscas.ac.cn> - 4.2.23-6
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC:remove dnf-help dependency
+
 * Thu Jul 15 2021 gaihuiying <gaihuiying1@huawei.com> - 4.2.23-5
 - Type:bugfix
 - ID:NA
