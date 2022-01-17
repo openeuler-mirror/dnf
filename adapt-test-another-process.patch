@@ -1,0 +1,25 @@
+From 997310fff83c3701ffc5c3835979732b130679c0 Mon Sep 17 00:00:00 2001
+From: zhangrui <zhangrui182@huawei.com>
+Date: Wed, 29 Dec 2021 14:59:18 +0800
+Subject: [PATCH] adapt-test-another-process
+
+---
+ tests/test_lock.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/test_lock.py b/tests/test_lock.py
+index ce9806b..c075005 100644
+--- a/tests/test_lock.py
++++ b/tests/test_lock.py
+@@ -112,7 +112,7 @@ class ProcessLockTest(tests.support.TestCase):
+         with l1:
+             process.start()
+             process.join()
+-        self.assertIsInstance(process.queue.get(), ProcessLockError)
++        self.assertEqual(process.queue.empty(), True)
+ 
+     def test_another_process_blocking(self):
+         l1 = build_lock(blocking=True)
+-- 
+2.27.0
+
