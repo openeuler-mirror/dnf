@@ -1,0 +1,40 @@
+From 9f3dec73c99873747a05419187b1f36147c5f7d0 Mon Sep 17 00:00:00 2001
+From: fengtao40 <fengtao40@huawei.com>
+Date: Tue, 7 Jul 2020 20:29:48 +0800
+Subject: [PATCH] huawei add rpm transaction debuginfo
+
+---
+ dnf/base.py | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/dnf/base.py b/dnf/base.py
+index 0443443..81e5f6f 100644
+--- a/dnf/base.py
++++ b/dnf/base.py
+@@ -981,6 +981,7 @@ class Base(object):
+             except:
+                 pass
+         dnf.util._sync_rpm_trans_with_swdb(self._ts, self._transaction)
++        logger.log(dnf.logging.DDEBUG, 'RPM transaction sync swdb over.')
+ 
+         if errors is None:
+             pass
+@@ -1018,6 +1019,7 @@ class Base(object):
+         # keep install_set status because _verify_transaction will clean it
+         self._trans_install_set = bool(self._transaction.install_set)
+ 
++        logger.log(dnf.logging.DDEBUG, 'RPM transaction TsFlag is %s' % self._ts.isTsFlagSet(rpm.RPMTRANS_FLAG_TEST))
+         # sync up what just happened versus what is in the rpmdb
+         if not self._ts.isTsFlagSet(rpm.RPMTRANS_FLAG_TEST):
+             self._verify_transaction(cb.verify_tsi_package)
+@@ -1040,6 +1042,7 @@ class Base(object):
+         count = 0
+ 
+         rpmdb_sack = dnf.sack.rpmdb_sack(self)
++        logger.log(dnf.logging.DDEBUG, 'verify transaction rpmdb_sack over.')
+ 
+         # mark group packages that are installed on the system as installed in the db
+         q = rpmdb_sack.query().installed()
+-- 
+2.18.4
+

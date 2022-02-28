@@ -1,0 +1,44 @@
+From 7438ca37b6e688637a87cbdc87490e70a61e1829 Mon Sep 17 00:00:00 2001
+From: fengtao40 <fengtao40@huawei.com>
+Date: Sat, 13 Jun 2020 16:54:09 +0800
+Subject: [PATCH] unlock-pidfile-if-current-proccess-is-NOT-dnf
+
+---
+ dnf/lock.py | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/dnf/lock.py b/dnf/lock.py
+index 13d8c27..589aa0a 100644
+--- a/dnf/lock.py
++++ b/dnf/lock.py
+@@ -32,6 +32,7 @@ import logging
+ import os
+ import threading
+ import time
++import re
+ 
+ logger = logging.getLogger("dnf")
+ 
+@@ -106,6 +107,19 @@ class ProcessLock(object):
+             if old_pid == pid:
+                 # already locked by this process
+                 return pid
++                
++            try:
++                with open('/proc/%d/status' % old_pid) as f:
++                    for line in f:
++                        if not re.match(r'Name:(.*)(dnf|yum)$', line, re.I):
++                            os.write(fd, str(pid).encode('utf-8'))
++                            return pid
++            except Exception as e:
++                msg = _('Malformed lock file found: %s.\n'
++                        'But pid in lock file is invalid '
++                        'Ensure no other dnf/yum process is running and '
++                        'remove the lock file manually.') % (self.target)
++                raise LockError(msg)
+ 
+             if not os.access('/proc/%d/stat' % old_pid, os.F_OK):
+                 # locked by a dead process, write our pid
+-- 
+2.18.2
+

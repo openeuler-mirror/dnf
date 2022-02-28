@@ -1,0 +1,50 @@
+From 0dfb26f901976a585ed29585d5cae694a11360d7 Mon Sep 17 00:00:00 2001
+From: zhangrui <zhangrui182@huawei.com>
+Dare: Mon, 21 Feb 2022 11:18:06 +0800
+Subject: [PATCH] fix-pid-file-residue
+
+---
+dnf/lock.py | 25 ++++++++++++-------------
+1 file changed, 12 insertions(+), 13 deletions(-)
+
+diff -urNp a/dnf/lock.py b/dnf/lock.py
+--- a/dnf/lock.py	2020-07-14 20:33:25.746000000 +0800
++++ b/dnf/lock.py	2020-07-14 20:51:17.378000000 +0800
+@@ -108,26 +108,25 @@ class ProcessLock(object):
+                 # already locked by this process
+                 return pid
+                 
++            if not os.access('/proc/%d/stat' % old_pid, os.F_OK):
++                # locked by a dead process, write our pid
++                os.lseek(fd, 0, os.SEEK_SET)
++                os.ftruncate(fd, 0)
++                os.write(fd, str(pid).encode('utf-8'))
++                return pid
++
+             try:
+                 with open('/proc/%d/status' % old_pid) as f:
+-                    for line in f:
+-                        if not re.match(r'Name:(.*)(dnf|yum)$', line, re.I):
+-                            os.write(fd, str(pid).encode('utf-8'))
+-                            return pid
+-            except Exception as e:
++                    if not re.findall(r'Name:(.*)(dnf|yum)', f.read(), re.I):
++                        os.write(fd, str(pid).encode('utf-8'))
++                        return pid
++            except OSError as e:
+                 msg = _('Malformed lock file found: %s.\n'
+                         'But pid in lock file is invalid '
+                         'Ensure no other dnf/yum process is running and '
+                         'remove the lock file manually.') % (self.target)
+                 raise LockError(msg)
+ 
+-            if not os.access('/proc/%d/stat' % old_pid, os.F_OK):
+-                # locked by a dead process, write our pid
+-                os.lseek(fd, 0, os.SEEK_SET)
+-                os.ftruncate(fd, 0)
+-                os.write(fd, str(pid).encode('utf-8'))
+-                return pid
+-
+             return old_pid
+ 
+         finally:
