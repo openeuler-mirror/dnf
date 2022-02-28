@@ -3,11 +3,16 @@
 
 Name:                 dnf
 Version:              4.10.0
-Release:              1
+Release:              2
 Summary:              A software package manager that manages packages on Linux distributions.
 License:              GPLv2+ and GPLv2 and GPL
 URL:                  https://github.com/rpm-software-management/dnf
 Source0:              https://github.com/rpm-software-management/dnf/archive/%{version}/%{name}-%{version}.tar.gz
+
+Patch9000:            unlock-pidfile-if-current-proccess-is-NOT-dnf.patch
+Patch9001:            fix-pid-file-residue.patch
+Patch9002:            add-rpm-transaction-debuginfo.patch
+Patch9003:            adapt-test-another-process.patch
 
 BuildArch:            noarch
 BuildRequires:        cmake gettext systemd bash-completion python3-sphinx
@@ -217,6 +222,9 @@ ln -sr  %{buildroot}%{_sysconfdir}/%{name}/vars %{buildroot}%{_sysconfdir}/yum/v
 %{_mandir}/man8/%{name}-automatic.8*
 
 %changelog
+* Sat Feb 26 2022 hanhuihui <hanhuihui5@huawei.com> - 4.10.0-2
+- round self-developed patch,adapt test_onother_process
+
 * Wed Dec 29 2021 yangcheng <yangcheng87@huawei.com> - 4.10.0-1
 - upgrade to 4.10.0
 
