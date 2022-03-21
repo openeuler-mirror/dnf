@@ -3,7 +3,7 @@
 
 Name:                 dnf
 Version:              4.10.0
-Release:              2
+Release:              3
 Summary:              A software package manager that manages packages on Linux distributions.
 License:              GPLv2+ and GPLv2 and GPL
 URL:                  https://github.com/rpm-software-management/dnf
@@ -13,6 +13,9 @@ Patch9000:            unlock-pidfile-if-current-proccess-is-NOT-dnf.patch
 Patch9001:            fix-pid-file-residue.patch
 Patch9002:            add-rpm-transaction-debuginfo.patch
 Patch9003:            adapt-test-another-process.patch
+Patch9004:            fix-dnf-history-undo-error-when-history-sqlite-missing.patch
+
+Patch6000:            backport-fix-dnf-mark-error-when-history-sqlite-missing.patch
 
 BuildArch:            noarch
 BuildRequires:        cmake gettext systemd bash-completion python3-sphinx
@@ -222,6 +225,12 @@ ln -sr  %{buildroot}%{_sysconfdir}/%{name}/vars %{buildroot}%{_sysconfdir}/yum/v
 %{_mandir}/man8/%{name}-automatic.8*
 
 %changelog
+* Mon Mar 21 2022 yangcheng <yangcheng87@h-partners.com> - 4.10.0-3
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC:fix dnf error when history sqlite missing
+
 * Mon Jan 17 2022 liuyumeng <liuyumeng5@huawei.com> - 4.10.0-2
 - round self-developed patch,adapt test_onother_process
 
