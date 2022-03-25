@@ -1,0 +1,28 @@
+From 0fefe7c1ad1d9c60f6159b14871837043b5e0d1f Mon Sep 17 00:00:00 2001
+From: zhanghaolian <65838930+iWhy98@users.noreply.github.com>
+Date: Tue, 25 Jan 2022 15:41:16 +0800
+Subject: [PATCH] dnf:fix dnf mark error when history sqlite missing
+
+Conflict:NA
+Reference:https://github.com/rpm-software-management/dnf/pull/1808
+
+---
+ dnf/cli/commands/mark.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/dnf/cli/commands/mark.py b/dnf/cli/commands/mark.py
+index ec16b73..cb1f91c 100644
+--- a/dnf/cli/commands/mark.py
++++ b/dnf/cli/commands/mark.py
+@@ -89,7 +89,7 @@ class MarkCommand(commands.Command):
+ 
+         old = self.base.history.last()
+         if old is None:
+-            rpmdb_version = self.sack._rpmdb_version()
++            rpmdb_version = self.base.sack._rpmdb_version()
+         else:
+             rpmdb_version = old.end_rpmdb_version
+ 
+-- 
+2.27.0
+

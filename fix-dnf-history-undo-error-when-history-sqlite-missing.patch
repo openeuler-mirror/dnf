@@ -1,0 +1,27 @@
+From 4f0e1d880f5e0f28b623f3be094552553384cf98 Mon Sep 17 00:00:00 2001
+From: cjavaphp <1010881517@qq.com>
+Date: Fri, 18 Mar 2022 16:29:20 +0800
+Subject: [PATCH] fix dnf history undo error
+
+fix dnf history undo error when history sqlite missing
+---
+ dnf/cli/commands/history.py | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/dnf/cli/commands/history.py b/dnf/cli/commands/history.py
+index 293d93f..dd2ea6f 100644
+--- a/dnf/cli/commands/history.py
++++ b/dnf/cli/commands/history.py
+@@ -265,6 +265,9 @@ class HistoryCommand(commands.Command):
+                 s = s[4:]
+             transaction_id = int(s)
+             if transaction_id <= 0:
++                if not self.output.history.last():
++                    logger.critical("Not found given transaction ID")
++                    raise ValueError
+                 transaction_id += self.output.history.last().tid
+             return transaction_id
+ 
+-- 
+2.27.0
+
