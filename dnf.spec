@@ -1,23 +1,18 @@
 %global py3pluginpath %{python3_sitelib}/%{name}-plugins
 %global relate_libdnf_version 0.48.0-3
+%global hawkey_version 0.65.0
+%global libcomps_version 0.1.8
+%global libmodulemd_version 2.9.3
+%global conflicts_dnf_plugins_core_version 4.0.26
+%define __cmake_in_source_build 1
 
 Name:                 dnf
-Version:              4.2.23
-Release:              6
+Version:              4.11.1
+Release:              1
 Summary:              A software package manager that manages packages on Linux distributions.
 License:              GPLv2+ and GPLv2 and GPL
 URL:                  https://github.com/rpm-software-management/dnf
 Source0:              https://github.com/rpm-software-management/dnf/archive/%{version}/%{name}-%{version}.tar.gz
-
-Patch0:               Fix-module-remove-all-when-no-match.patch
-Patch1:               Prevent-traceback-catch-ValueError-if-pkg-is-from-cmdline.patch
-Patch2:               Check-for-specific-key-string-when-verifing-signatures.patch
-Patch3:               Use-rpmkeys-to-verify-package-signature-with-_pkgverify_level.patch
-Patch4:               Remove-key-regex-matching-rpm-sprintf-output-varies-too-much.patch
-Patch5:               Add-missing-check-if-path-exists-fixes-dead-code.patch
-Patch6:               dnf-rpm-miscutils.py-fix-usage-of-_.patch
-Patch7:               Pass-the-package-to-rpmkeys-stdin.patch
-Patch8:               Use-rpmkeys-alone-to-verify-signature.patch
 
 BuildArch:            noarch
 BuildRequires:        cmake gettext systemd bash-completion python3-sphinx
@@ -29,7 +24,7 @@ Provides:             dnf-command(info) dnf-command(install) dnf-command(list) d
 Provides:             dnf-command(mark) dnf-command(provides) dnf-command(reinstall) dnf-command(remove)
 Provides:             dnf-command(repolist) dnf-command(repoquery) dnf-command(repository-packages)
 Provides:             dnf-command(search) dnf-command(updateinfo) dnf-command(upgrade) dnf-command(upgrade-to)
-Conflicts:            python2-dnf-plugins-core < 4.0.6 python3-dnf-plugins-core < 4.0.6
+Conflicts:            python2-dnf-plugins-core < %{conflicts_dnf_plugins_core_version} python3-dnf-plugins-core < %{conflicts_dnf_plugins_core_version}
 Provides:             dnf-data %{name}-conf = %{version}-%{release} %{name}-automatic = %{version}-%{release}
 Obsoletes:            dnf-data %{name}-conf < %{version}-%{release} %{name}-automatic < %{version}-%{release}
 
@@ -51,12 +46,12 @@ It supports RPMs, modules and comps groups & environments.
 %package -n           python3-%{name}
 Summary:              Python 3 interface to DNF
 %{?python_provide:%python_provide python3-%{name}}
-BuildRequires:        python3-devel python3-hawkey >= 0.48.0 python3-libdnf >= 0.48.0
-BuildRequires:        python3-libcomps >= 0.1.8 libmodulemd >= 1.4.0
+BuildRequires:        python3-devel python3-hawkey >= %{hawkey_version} python3-libdnf >= 0.48.0
+BuildRequires:        python3-libcomps >= %{libcomps_version} libmodulemd >= %{libmodulemd_version}
 BuildRequires:        python3-nose python3-gpg python3-rpm >= 4.14.0
-Requires:             python3-gpg %{name}-data = %{version}-%{release} libmodulemd >= 1.4.0
-Requires:             python3-hawkey >= 0.48.0 python3-libdnf >= %{relate_libdnf_version}
-Requires:             python3-libcomps >= 0.1.8 python3-rpm >= 4.14.0
+Requires:             python3-gpg %{name}-data = %{version}-%{release} libmodulemd >= %{libmodulemd_version}
+Requires:             python3-hawkey >= %{hawkey_version} python3-libdnf >= %{relate_libdnf_version}
+Requires:             python3-libcomps >= %{libcomps_version} python3-rpm >= 4.14.0
 Recommends:           python3-unbound
 Obsoletes:	      python2-%{name}
 
@@ -79,8 +74,9 @@ mkdir build-py3
 
 %build
 pushd build-py3
-%cmake .. -DPYTHON_DESIRED:FILEPATH=%{__python3}
-%make_build all doc-man
+%cmake .. -DPYTHON_DESIRED:FILEPATH=%{__python3} -DDNF_VERSION=%{version}
+%make_build
+make doc-man
 popd
 
 %install
@@ -117,25 +113,13 @@ ctest -VV
 popd
 
 %post
-%systemd_post dnf-makecache.timer
-%systemd_post dnf-automatic.timer
-%systemd_post dnf-automatic-notifyonly.timer
-%systemd_post dnf-automatic-download.timer
-%systemd_post dnf-automatic-install.timer
+%systemd_post dnf-makecache.timer dnf-automatic.timer dnf-automatic-notifyonly.timer dnf-automatic-download.timer dnf-automatic-install.timer
 
 %preun
-%systemd_preun dnf-automatic.timer
-%systemd_preun dnf-makecache.timer
-%systemd_preun dnf-automatic-notifyonly.timer
-%systemd_preun dnf-automatic-download.timer
-%systemd_preun dnf-automatic-install.timer
+%systemd_preun dnf-automatic.timer dnf-makecache.timer dnf-automatic-notifyonly.timer dnf-automatic-download.timer dnf-automatic-install.timer
 
 %postun
-%systemd_postun_with_restart dnf-makecache.timer
-%systemd_postun_with_restart dnf-automatic.timer
-%systemd_postun_with_restart dnf-automatic-notifyonly.timer
-%systemd_postun_with_restart dnf-automatic-download.timer
-%systemd_postun_with_restart dnf-automatic-install.timer
+%systemd_postun_with_restart dnf-makecache.timer dnf-automatic.timer dnf-automatic-notifyonly.timer dnf-automatic-download.timer dnf-automatic-install.timer
 
 %files
 %license COPYING PACKAGE-LICENSING
@@ -203,11 +187,18 @@ popd
 %{_mandir}/man5/yum.conf.5.*
 %{_mandir}/man8/yum-shell.8*
 %{_mandir}/man1/yum-aliases.1*
+%{_mandir}/man5/dnf-transaction-json.5*
 %{_mandir}/man5/%{name}.conf.5*
 %{_mandir}/man7/dnf.modularity.7*
 %{_mandir}/man8/%{name}-automatic.8*
 
 %changelog
+ * Sat Mar 26 2022 Jiacheng Zhou <jchzhou@outlook.com> - 4.11.1-1
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC:upgrade to 4.11.1-1
+
 * Thu Jul 15 2021 gaihuiying <gaihuiying1@huawei.com> - 4.2.23-6
 - Type:bugfix
 - ID:NA
